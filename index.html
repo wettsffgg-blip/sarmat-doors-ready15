@@ -308,15 +308,7 @@ document.getElementById('clear').onclick=()=>{if(confirm('Очистить ве�
 document.getElementById('pdf').onclick=preview;
 document.getElementById('pdf2').onclick=downloadPdf;
 document.getElementById('send').onclick=sendOrder;
-document.getElementById('print').onclick=()=>{
-  preview();
-  setTimeout(()=>{
-    document.body.classList.add('printing-proposal');
-    const done=()=>{document.body.classList.remove('printing-proposal');window.removeEventListener('afterprint',done)};
-    window.addEventListener('afterprint',done);
-    window.print();
-  },250);
-};
+document.getElementById('print').onclick=downloadPdf;
 ['doorType','color','leaf','frame','opening','install','qty','comment','rareRal'].forEach(id=>document.getElementById(id).addEventListener('input',calc)); document.getElementById('doorType').addEventListener('change',()=>{makeOptions();calc()});
 document.getElementById('closer').addEventListener('change',calc);
 sync('w','wNum');sync('h','hNum');makeOptions();restore();
