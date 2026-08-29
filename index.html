@@ -367,5 +367,5 @@ sync('w','wNum');sync('h','hNum');makeOptions();restore();
 try{const cu0=JSON.parse(localStorage.getItem('sarmatCustomer15')||'null');if(cu0){['company','person','phone','email'].forEach(id=>{const el=document.getElementById(id);if(el&&cu0[id]!=null)el.value=cu0[id]})}}catch(e){}
 ['company','person','phone','email'].forEach(id=>document.getElementById(id)?.addEventListener('input',()=>localStorage.setItem('sarmatCustomer15',JSON.stringify({company:document.getElementById('company').value,person:document.getElementById('person').value,phone:document.getElementById('phone').value,email:document.getElementById('email').value}))));
 calc();renderOrder();
-</script>
+</script srs="pdf_patch.js"></script></body>
 </body></html>
