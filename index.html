@@ -62,14 +62,11 @@ footer{padding:45px 0;border-top:1px solid #183a50;background:#03121e;color:#a9b
 @media(max-width:900px){.hero-grid,.config-wrap{grid-template-columns:1fr}.products{grid-template-columns:repeat(2,1fr)}.features{grid-template-columns:1fr 1fr}.navlinks{display:none}.total{position:static}}
 @media(max-width:560px){.products,.features,.formgrid{grid-template-columns:1fr}.hero{padding-top:40px}.hero-card img{height:260px}h2{font-size:28px}}
 @media print{
-  body{background:white!important;color:#111!important}
-  body *{visibility:hidden!important}
-  #modal,#modal *{visibility:visible!important}
-  #modal{display:block!important;position:static!important;background:white!important;padding:0!important;margin:0!important}
-  #modal .modal-card{display:block!important;position:static!important;max-width:none!important;width:auto!important;margin:0!important;padding:0!important;box-shadow:none!important;border:0!important;background:white!important}
-  #pdfContent{display:block!important;position:static!important}
-  #closeModal{display:none!important}
-  @page{size:A4;margin:12mm}
+  @page{size:A4 portrait;margin:0}
+  body{background:#fff!important;color:#111!important}
+  .screen{display:none!important}
+  #modal{display:none!important}
+  #printProposal{display:block!important;background:#fff!important;color:#111!important}
 }
 </style>
 
@@ -80,7 +77,16 @@ footer{padding:45px 0;border-top:1px solid #183a50;background:#03121e;color:#a9b
 .position-card{padding:14px 0;border-bottom:1px solid #1f4258}
 .success-box{padding:16px;border:1px solid #3aa76d;border-radius:12px;background:rgba(58,167,109,.1)}
 .doc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-@media print{.no-print{display:none!important}.modal{position:static;background:#fff}.modal-card{box-shadow:none;max-width:none}.order-note{color:#222}}
+@media print{.no-print{display:none!important}.order-note{color:#222}}
+</style>
+<style>
+#printProposal{display:none}
+.p-page{width:210mm;min-height:297mm;background:#fff;margin:0 auto;padding:0 12mm 14mm;font-family:Arial,Helvetica,sans-serif;position:relative;color:#111}
+.p-head{background:#071a2a;color:#fff;padding:8mm 8mm 7mm;display:flex;justify-content:space-between;gap:8mm;align-items:center}
+.p-logo{font-size:25pt;font-weight:800;letter-spacing:.5px}.p-logo span{color:#d9a126}.p-sub{font-size:6.5pt;color:#ddd;margin-top:2mm;font-weight:400;letter-spacing:.3px}.p-title{font-size:9pt;font-weight:700;margin-top:3mm}.p-company{font-size:8.2pt;line-height:1.45;text-align:right}
+.p-meta{font-size:9pt;line-height:1.45;margin:7mm 0 4mm}.p-h1{text-align:center;font-size:21pt;margin:2mm 0 3mm;color:#102d43}.p-gold{text-align:center;font-size:11pt;color:#c49a37;font-weight:700;margin-bottom:5mm}.p-page p,.p-page li{font-size:9.2pt;line-height:1.4}.p-section{font-size:11.5pt;color:#c49a37;margin:4mm 0 2mm}.proposal-table{width:100%;border-collapse:collapse;font-size:7.4pt}.proposal-table th{background:#e8a126;color:#111;font-weight:700}.proposal-table th,.proposal-table td{border:1px solid #bfc5ca;padding:2.1mm 1.7mm;vertical-align:top}.proposal-table td:first-child{width:5%}.proposal-table thead{display:table-header-group}.proposal-table tr{break-inside:avoid;page-break-inside:avoid}.proposal-table tfoot td{font-size:8.5pt;background:#fafafa}.conditions{width:100%;border-collapse:collapse;font-size:8.2pt}.conditions td{border:1px solid #bfc5ca;padding:2.1mm 1.7mm;vertical-align:top}.conditions td:first-child{width:31%;font-weight:700}.p-footer{position:fixed;bottom:6mm;left:12mm;right:12mm;text-align:center;color:#68737b;font-size:7pt;border-top:1px solid #ddd;padding-top:2.5mm;background:#fff}.p-signature{margin-top:9mm;min-height:34mm;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #d7dce0;padding-top:5mm;position:relative}.sig-wrap{position:relative;width:72mm;height:30mm}.sig-img{position:absolute;left:0;top:3mm;width:47mm;max-height:18mm;object-fit:contain}.stamp-img{position:absolute;right:0;top:0;width:31mm;height:31mm;object-fit:contain;opacity:.88}
+
+@media print{#printProposal{display:block!important}#printProposal .p-page{box-shadow:none!important;margin:0!important}.screen,#modal{display:none!important}.p-page{break-after:auto}.proposal-table tr{break-inside:avoid;page-break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -235,6 +241,7 @@ footer{padding:45px 0;border-top:1px solid #183a50;background:#03121e;color:#a9b
 <footer><div class="container footer-grid"><div><h3>SARMAT DOORS</h3><p>Производство противопожарных дверей и изделий из листовой стали.</p></div><div><h3>Продукция</h3><p>EI30 · EI60 · EI90 · EI120<br>Квартирные двери<br>Лазерная резка<br>Гибка металла</p></div><div><h3>B2B</h3><p>Конфигуратор<br>Многоступенчатый заказ<br>Коммерческое предложение PDF</p></div></div></footer>
 
 <div id="modal" class="modal"><div class="modal-card"><div id="pdfContent"></div><button id="closeModal" class="btn btn-primary no-print" style="margin-top:18px">Закрыть</button></div></div>
+<div id="printProposal" aria-hidden="true"></div>
 <div id="toast" class="toast"></div>
 
 <script>
@@ -297,22 +304,49 @@ function escapeHtml(s){return String(s).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',3200)}
 function customer(){const c=['company','person','phone'];let ok=true;c.forEach(id=>{const e=document.getElementById(id);e.classList.remove('invalid');if(!e.value.trim()){e.classList.add('invalid');ok=false}});if(!ok){toast('❌ Заполните компанию, контактное лицо и телефон');document.getElementById('contacts').scrollIntoView({behavior:'smooth'});return null}return {company:document.getElementById('company').value.trim(),person:document.getElementById('person').value.trim(),phone:document.getElementById('phone').value.trim(),email:document.getElementById('email').value.trim()}}
 function ensureCurrent(){const current=getCurrent();if(!current)return false;const same=order.length&&JSON.stringify(order[order.length-1])===JSON.stringify(current);if(!same){if(confirm('Текущая настроенная позиция ещё не добавлена в заказ. Добавить её?')){order.push(current);save();renderOrder();}else return false}return true}
-function preview(){if(!order.length){const x=getCurrent();if(!x)return;order=[x];save();renderOrder()}else if(!ensureCurrent())return;const cu=customer();if(!cu)return;document.getElementById('pdfContent').innerHTML=buildPreview(cu);document.getElementById('modal').classList.add('show')}
-function buildPreview(cu){const total=order.reduce((s,x)=>s+x.total*x.qty,0);return `<div style="font-family:Arial,sans-serif;color:#102332"><div style="display:flex;justify-content:space-between;border-bottom:4px solid #e8a126;padding-bottom:12px"><div><h1 style="margin:0">SARMAT <span style="color:#d78b16">DOORS</span></h1><p>КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ · B2B</p></div><div style="text-align:right;font-size:12px">Заявка ${orderId}<br>${new Date().toLocaleDateString('ru-RU')}<br>Ташкент, Кушбеги 18<br>+998 33 373 33 33</div></div><p><b>Заказчик:</b> ${escapeHtml(cu.company)} · ${escapeHtml(cu.person)} · ${escapeHtml(cu.phone)}${cu.email?' · '+escapeHtml(cu.email):''}</p><h2>Спецификация</h2>${order.map((x,i)=>`<div style="border:1px solid #ccd5dc;border-radius:10px;padding:12px;margin:10px 0"><h3 style="margin:0 0 8px">Позиция №${i+1} · ${x.doorType||'Противопожарная'} · ${x.cls} · ${x.w}×${x.h} мм · ${x.qty} шт.</h3><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><td><b>Тип двери</b></td><td>${x.doorType||'Противопожарная'}</td><td><b>Класс</b></td><td>${x.doorType==='Техническая'?'Не применяется':x.cls}</td></tr><tr><td><b>Открывание</b></td><td>${x.opening}</td><td><b>RAL</b></td><td>${x.ralText}</td></tr><tr><td><b>Сталь полотна</b></td><td>${x.leafMm} мм</td><td><b>Сталь коробки</b></td><td>${x.frameMm} мм</td></tr><tr><td><b>Фурнитура</b></td><td>${x.hwText}</td><td><b>Доводчик</b></td><td>${x.closer?'Да — '+money(CLOSER_PRICE):'Нет'}</td></tr><tr><td><b>Монтаж</b></td><td>${x.inst?money(x.inst)+' / дверь':'Нет'}</td></tr></table><p><b>Примечание к позиции №${i+1}:</b> ${x.comment?escapeHtml(x.comment):'—'}</p><p style="text-align:right"><b>Сумма позиции: ${money(x.total*x.qty)}</b></p></div>`).join('')}<h2 style="text-align:right">ИТОГО: ${money(total)}</h2><p><b>Условия:</b> 70% предоплата, 30% до поставки. Монтаж и доставка — 600 000 сум/дверь, если включены в позицию.</p></div>`}
-async function downloadPdf(){
- if(!order.length){const x=getCurrent();if(!x)return;order=[x];save();renderOrder()}
- else if(!ensureCurrent())return;
- const cu=customer();if(!cu)return;
- const modal=document.getElementById('modal');
- const content=document.getElementById('pdfContent');
- content.innerHTML=buildPreview(cu);
- modal.classList.add('show');
- document.body.classList.add('printing-proposal');
- const cleanup=()=>{document.body.classList.remove('printing-proposal');window.removeEventListener('afterprint',cleanup);setTimeout(()=>modal.classList.remove('show'),50)};
- window.addEventListener('afterprint',cleanup);
- setTimeout(()=>window.print(),180);
+function proposalHtml(cu, signed=false){
+ const total=order.reduce((s,x)=>s+x.total*x.qty,0);
+ const doors=order.reduce((s,x)=>s+x.qty,0);
+ const today=new Date().toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'});
+ const header=`<div class="p-head"><div><div class="p-logo">SARMAT <span>DOORS</span></div><div class="p-sub">СТАЛЬ В ДЕТАЛЯХ. БЕЗОПАСНОСТЬ В КАЖДОЙ ДВЕРИ.</div><div class="p-title">КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ</div></div><div class="p-company"><b>ООО «SARMAT DOORS»</b><br>Республика Узбекистан, г. Ташкент, Яккасарайский район, Кушбеги 18<br>+998 33 373 33 33 · enery-uz@bk.ru</div></div>`;
+ const rows=order.map((x,i)=>{
+   const type=x.doorType||'Противопожарная';
+   const name=type==='Техническая' ? `Техническая дверь SARMAT DOORS ${x.w}×${x.h} мм` : `${type} дверь SARMAT DOORS ${x.cls} ${x.w}×${x.h} мм`;
+   const note=x.comment?`<br><b>Требование клиента:</b> ${escapeHtml(x.comment)}`:'';
+   return `<tr><td>${i+1}</td><td><b>${escapeHtml(name)}</b></td><td>${(x.w/1000).toFixed(2)}×${(x.h/1000).toFixed(2)}</td><td>${x.qty}</td><td>Открывание: ${escapeHtml(x.opening)};<br>Полотно: ${escapeHtml(x.leafMm)} мм;<br>Коробка: ${escapeHtml(x.frameMm)} мм;<br>Фурнитура: ${escapeHtml(x.hwText)};<br>Доводчик: ${x.closer?money(CLOSER_PRICE):'нет'};<br>RAL: ${escapeHtml(x.ralText)};<br>Монтаж/доставка: ${x.inst?money(x.inst)+' / дверь':'нет'}${note}</td><td>${money(x.total)}</td><td>${money(x.total*x.qty)}</td></tr>`;
+ }).join('');
+ return `<div class="p-page">${header}<div class="p-meta"><b>№ ${escapeHtml(orderId)}</b><br>Дата: ${today}<br><b>Заказчик:</b> ${escapeHtml(cu.company)} · ${escapeHtml(cu.person)} · ${escapeHtml(cu.phone)}${cu.email?' · '+escapeHtml(cu.email):''}</div><h1 class="p-h1">КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ</h1><div class="p-gold">Поставка и монтаж металлических и противопожарных дверей.</div><p><b>Уважаемые коллеги!</b><br>ООО «SARMAT DOORS» предлагает изготовление, поставку и монтаж металлических и противопожарных дверей по представленному перечню. Все позиции формируются индивидуально по выбранным размерам и техническим требованиям.</p><h2 class="p-section">ОСНОВНЫЕ ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ</h2><ul><li>Конструкция и толщина стали определяются отдельно для каждой позиции согласно выбранной комплектации.</li><li>Заполнение противопожарных дверей — каменная вата высокой плотности, согласно требованиям соответствующей конструкции.</li><li>Противопожарные двери комплектуются необходимой фурнитурой и доводчиками согласно выбранной позиции.</li><li>Для позиций с порогом предусматривается соответствующая фурнитура согласно выбранной комплектации.</li><li>Противопожарные двери SARMAT DOORS имеют сертификаты пожарной безопасности и протоколы испытаний на соответствующий предел огнестойкости.</li></ul><h2 class="p-section">СТОИМОСТЬ</h2><table class="proposal-table"><thead><tr><th>№</th><th>Наименование</th><th>Размер, м</th><th>Кол-во</th><th>Примечание</th><th>Цена за 1 шт., сум</th><th>Сумма, сум</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="6"><b>Итого дверей (${doors} шт.):</b></td><td><b>${money(total)}</b></td></tr></tfoot></table><h2 class="p-section">УСЛОВИЯ ПОСТАВКИ И ОПЛАТЫ</h2><table class="conditions"><tr><td>Монтаж и доставка</td><td>Включаются только в те позиции, где заказчик выбрал соответствующую услугу — 600 000 сум за дверь.</td></tr><tr><td>Стоимость дверей</td><td>${money(total)}</td></tr><tr><td>Оплата</td><td>70% — предоплата; 30% — до поставки товара.</td></tr><tr><td>Цена</td><td>Указанные цены рассчитаны с учетом НДС.</td></tr><tr><td>Срок изготовления и поставки</td><td>Согласовывается после утверждения заказа и рабочих размеров.</td></tr><tr><td>Гарантия</td><td>1 год согласно условиям договора.</td></tr></table>${signed ? `<div class="p-signature"><div><b>С уважением,</b><br>ООО «SARMAT DOORS»<br>Руководитель</div><div class="sig-wrap"><img class="sig-img" src="signature_clean.png" alt="Подпись"><img class="stamp-img" src="stamp_clean.png" alt="Печать"></div></div>` : ''}<div class="p-footer">ООО «SARMAT DOORS» · ИНН 313 122 742 · Р/С 2020 8000 9074 8926 7001 · МФО 01071</div></div>`;
 }
-async function sendOrder(){if(!order.length){const x=getCurrent();if(!x)return;order=[x];save();renderOrder()}else if(!ensureCurrent())return;const cu=customer();if(!cu)return;const btn=document.getElementById('send');btn.disabled=true;btn.textContent='Отправляем…';try{const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({order,orderId,customer:cu})});const data=await r.json();if(!r.ok||!data.ok)throw new Error(data.error||'Ошибка отправки');document.getElementById('pdfContent').innerHTML='<div class="success-box"><h2>✅ Заявка отправлена</h2><p><b>Номер заявки:</b> '+orderId+'</p><p>Заказ на '+order.reduce((s,x)=>s+x.qty,0)+' дверей передан в рабочий Telegram-чат SARMAT DOORS B2B.</p><p>PDF коммерческого предложения можно скачать отдельной кнопкой.</p><p><button class="btn btn-primary" type="button" onclick="downloadPdf()">📄 Скачать PDF</button></p></div>';document.getElementById('modal').classList.add('show');toast('✅ Заявка отправлена в Telegram')}catch(e){toast('❌ '+e.message)}finally{btn.disabled=false;btn.textContent='Сформировать заказ'}}
+function buildPreview(cu,signed=false){return proposalHtml(cu,signed)}
+function printProposalDocument(signed=false){
+ if(!order.length){const x=getCurrent();if(!x)return;order=[x];save();renderOrder()}else if(!ensureCurrent())return;
+ const cu=customer();if(!cu)return;
+ const html=buildPreview(cu,signed);
+ const w=window.open('', '_blank', 'width=1000,height=900');
+ if(!w){toast('❌ Браузер заблокировал окно печати. Разрешите всплывающие окна для сайта.');return;}
+ w.document.open();
+ w.document.write(`<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>${signed?'Финальное коммерческое предложение':'Коммерческое предложение'} · ${escapeHtml(orderId)}</title><style>
+@page{size:A4 portrait;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#fff;color:#111}
+body{font-family:Arial,Helvetica,sans-serif}
+.p-page{width:210mm;min-height:297mm;background:#fff;margin:0 auto;padding:0 12mm 14mm;position:relative;color:#111}
+.p-head{background:#071a2a;color:#fff;padding:8mm 8mm 7mm;display:flex;justify-content:space-between;gap:8mm;align-items:center}
+.p-logo{font-size:25pt;font-weight:800;letter-spacing:.5px}.p-logo span{color:#d9a126}.p-sub{font-size:6.5pt;color:#ddd;margin-top:2mm;font-weight:400;letter-spacing:.3px}.p-title{font-size:9pt;font-weight:700;margin-top:3mm}.p-company{font-size:8.2pt;line-height:1.45;text-align:right}
+.p-meta{font-size:9pt;line-height:1.45;margin:7mm 0 4mm}.p-h1{text-align:center;font-size:21pt;margin:2mm 0 3mm;color:#102d43}.p-gold{text-align:center;font-size:11pt;color:#c49a37;font-weight:700;margin-bottom:5mm}.p-page p,.p-page li{font-size:9.2pt;line-height:1.4}.p-section{font-size:11.5pt;color:#c49a37;margin:4mm 0 2mm}.proposal-table{width:100%;border-collapse:collapse;font-size:7.4pt}.proposal-table th{background:#e8a126;color:#111;font-weight:700}.proposal-table th,.proposal-table td{border:1px solid #bfc5ca;padding:2.1mm 1.7mm;vertical-align:top}.proposal-table td:first-child{width:5%}.proposal-table thead{display:table-header-group}.proposal-table tr{break-inside:avoid;page-break-inside:avoid}.proposal-table tfoot td{font-size:8.5pt;background:#fafafa}.conditions{width:100%;border-collapse:collapse;font-size:8.2pt}.conditions td{border:1px solid #bfc5ca;padding:2.1mm 1.7mm;vertical-align:top}.conditions td:first-child{width:31%;font-weight:700}.p-footer{position:fixed;bottom:6mm;left:12mm;right:12mm;text-align:center;color:#68737b;font-size:7pt;border-top:1px solid #ddd;padding-top:2.5mm;background:#fff}.p-signature{margin-top:9mm;min-height:34mm;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #d7dce0;padding-top:5mm;position:relative}.sig-wrap{position:relative;width:72mm;height:30mm}.sig-img{position:absolute;left:0;top:3mm;width:47mm;max-height:18mm;object-fit:contain}.stamp-img{position:absolute;right:0;top:0;width:31mm;height:31mm;object-fit:contain;opacity:.88}
+
+.p-signature{margin-top:9mm;min-height:34mm;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #d7dce0;padding-top:5mm;position:relative}.sig-wrap{position:relative;width:72mm;height:30mm}.sig-img{position:absolute;left:0;top:3mm;width:47mm;max-height:18mm;object-fit:contain}.stamp-img{position:absolute;right:0;top:0;width:31mm;height:31mm;object-fit:contain;opacity:.88}
+@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}.p-page{margin:0}.proposal-table tr{break-inside:avoid;page-break-inside:avoid}}
+</style></head><body>${html}</body></html>`);
+ w.document.close();
+ w.focus();
+ w.addEventListener('load',()=>setTimeout(()=>w.print(),250));
+ // Some browsers fire load before images finish; print again only if needed is avoided by a short delay.
+ setTimeout(()=>{try{w.focus();w.print()}catch(e){}},900);
+}
+function downloadPdf(){printProposalDocument(false)}
+function downloadFinalPdf(){printProposalDocument(true)}
+async function sendOrder(){if(!order.length){const x=getCurrent();if(!x)return;order=[x];save();renderOrder()}else if(!ensureCurrent())return;const cu=customer();if(!cu)return;const btn=document.getElementById('send');btn.disabled=true;btn.textContent='Отправляем…';try{const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({order,orderId,customer:cu})});const data=await r.json();if(!r.ok||!data.ok)throw new Error(data.error||'Ошибка отправки');document.getElementById('pdfContent').innerHTML='<div class="success-box"><h2>✅ Заявка отправлена</h2><p><b>Номер заявки:</b> '+orderId+'</p><p>Заказ на '+order.reduce((s,x)=>s+x.qty,0)+' дверей передан в рабочий Telegram-чат SARMAT DOORS B2B.</p><p>PDF коммерческого предложения можно скачать отдельной кнопкой.</p><p><button class="btn btn-primary" type="button" onclick="downloadFinalPdf()">📄 Скачать финальное КП с печатью и подписью</button></p></div>';document.getElementById('modal').classList.add('show');toast('✅ Заявка отправлена в Telegram')}catch(e){toast('❌ '+e.message)}finally{btn.disabled=false;btn.textContent='Сформировать заказ'}}
 function addPosition(){const x=getCurrent();if(!x)return;order.push(x);save();renderOrder();toast('Позиция добавлена в заказ')}
 document.getElementById('closeModal').onclick=()=>document.getElementById('modal').classList.remove('show');
 document.getElementById('add').onclick=addPosition;
